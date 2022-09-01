@@ -1,0 +1,40 @@
+{
+  "name": "Oder town",
+  "tree": {
+    "$className": "DataModel",
+
+    "ReplicatedStorage": {
+      "Modules": {
+        "$path": "src/modules/public"
+      }
+    },
+
+    "ServerScriptService": {
+      "Main": {
+        "$className": "Actor",
+        "$path": "src/server"
+      }
+    },
+
+    "ServerStorage": {
+      "Modules": {
+        "$path": "src/modules/private"
+      }
+    },
+
+    "StarterPlayer": {
+      "StarterCharacterScripts": {
+        "Main": {
+          "$className": "Actor",
+          "$path": "src/client/char"
+        }
+      },
+      "StarterPlayerScripts": {
+        "Main": {
+          "$className": "Actor",
+          "$path": "src/client/plr"
+        }
+      }
+    }
+  }
+}
