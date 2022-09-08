@@ -54,7 +54,7 @@ Players.PlayerAdded:Connect(function(plr)
         end
 
         --> @Info Set up cash lisener so it updates in the dataservice
-        cash.Value = if value <= 0 then defaultCash else value
+        cash.Value = if not(value) or value <= 0 then defaultCash else value
 
         table.insert(Tasks, {plr, cash:GetPropertyChangedSignal('Value'):Connect(function() 
             cashHandler:Set(plr, cash.Value)

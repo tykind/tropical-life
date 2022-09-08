@@ -18,30 +18,34 @@ end
 
 local quickData = {
     modules = {
-        ["Data handler"] = setmetatable({
-            Description = "Data handler",
-            Module = script.Parent.dataHandler.dataHandler,
-        }, moduleitem),
         ["Data parser"] = setmetatable({
-            Description = "Player data parser",
-            Module = ReplicatedStorage.Modules.data.playerData,
+            Description = "Parse player data quickly and safely",
+            Module = script.Parent.data.playerData
         }, moduleitem),
         ["Log system"] = setmetatable({
             Description = "Quick and easy way to log your script-contexts",
-            Module = ReplicatedStorage.Modules.logger.logger
-        }, moduleitem),
-        ["House"] = setmetatable({
-            Description = "House instance and handler",
-            Module = script.Parent.housing.house
+            Module = script.Parent.logger.logger
         }, moduleitem),
         ["Types"] = setmetatable({
             Description = "House instance and handler",
-            Module = script.Parent.types.types
+            Module = script.Parent.types['core types']
         }, moduleitem),
-        ["Housing"] = setmetatable({
-            Description = "Housing system for server",
-            Module = script.Parent.housing.housing
-        }, moduleitem)
+        ["UIButton"] = setmetatable({
+            Description = "Button class",
+            Module = script.Parent.ui.classes['buttons']
+        }, moduleitem),
+        ["UIText"] = setmetatable({
+            Description = "Text class",
+            Module = script.Parent.ui.classes['texts']
+        }, moduleitem),
+        ["UIPage"] = setmetatable({
+            Description = "Pages class",
+            Module = script.Parent.ui.classes['pages']
+        }, moduleitem),
+        ["UILib"] = setmetatable({
+            Description = "User interface library",
+            Module = script.Parent.ui.ui
+        }, moduleitem),
     }
 }
 

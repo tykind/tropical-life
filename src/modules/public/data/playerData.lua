@@ -1,7 +1,5 @@
 --> @Desc Player data handler
 --> @Author Tykind
-local Players = game:GetService("Players")
-
 local playerData = {}
 
 ---> @Section Quick instance use
@@ -31,6 +29,23 @@ function numval:sub(amount : number)
     self.val.Value -= amount
 end
 
+local stringval = {}
+stringval.__index = stringval
+
+function stringval.new(val : StringValue)
+    return setmetatable({
+        val = val
+    }, numval)
+end
+
+function stringval:get()
+    return self.val.Value
+end
+
+function stringval:set(input : string)
+    self.val.Value = input
+end
+
 ---> @Section Parsing data
 
 function playerData:parseData(target : Player)
@@ -42,7 +57,8 @@ function playerData:parseData(target : Player)
     end
 
     return {
-        ["cash"] = numval.new(data:FindFirstChild("cash") or Instance.new("NumberValue"))
+        ["cash"] = numval.new(data:FindFirstChild("cash") or Instance.new("NumberValue")),
+        ["role"] = stringval.new(data:FindFirstChild("role") or Instance.new("StringValue")),
     }
 end
 
