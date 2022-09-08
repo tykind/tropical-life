@@ -41,6 +41,10 @@ local quickData = {
         ["Housing"] = setmetatable({
             Description = "Housing system for server",
             Module = script.Parent.housing.housing
+        }, moduleitem),
+        ["Role body"] = setmetatable({
+            Description = "Body system for roles",
+            Module = script.Parent.roles['role body']
         }, moduleitem)
     }
 }
