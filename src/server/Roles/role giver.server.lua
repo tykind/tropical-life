@@ -10,6 +10,8 @@ local quickPublicData = require(ReplicatedStorage.Modules.quickData)
 local rolesBody = require(quickPrivateData.modules["Role body"].Module)
 local dataParser = require(quickPublicData.modules["Data parser"].Module)
 
+local Teams = game:GetService("Teams")
+
 ---> @Section Additional utilities
 
 local function isCharacter(obj)
@@ -58,21 +60,25 @@ for _, pad in pairs(rolePadsFolder:GetChildren()) do
 					playerConnections[target.UserId] = {}
 				end
 				playerConnections[target.UserId].CharacterAdded = target.CharacterAdded:Connect(function()
+					target.Team =  Teams:FindFirstChild("Parent")
 					playerData.role:set("Parent") --> @SET_PARENT_DEFAULT
 				end)
 			end
 
 			if not(playerData.role:get() == roleName) then --> @IGNORE_BABY_PLAYERS
+				local teamObj = Teams:FindFirstChild(roleName)
+				playerData.role:set(roleName)
 				-- Set body configurations
-				if roleName == "Baby" then
+			-->	if roleName == "Baby" then
 					--> Make baby
-					task.spawn(function()
-						rolesBody:makeBaby(target, char)
-					end)
-					target:LoadCharacter()
-					playerData.role:set(roleName)
-				else
+					-->task.spawn(function()
+					-->	rolesBody:makeBaby(target, char)
+					-->end)
+					-->target:LoadCharacter()
+					-->playerData.role:set(roleName)
+				-->else
 					--> Scale avatar
+					--> @CHANGE_PLAYER_SCALE
 					local scalingPercent = rolesBody.scaling[roleName]
 					if scalingPercent then
 						task.spawn(function()
@@ -80,8 +86,13 @@ for _, pad in pairs(rolePadsFolder:GetChildren()) do
 						end)
 						target:LoadCharacter()
 						playerData.role:set(roleName)
+
+						--> @SET_PLAYER_TEAM
+						if teamObj then
+							target.Team = teamObj
+						end
 					end
-				end
+			-->	end
 			end
         end
     end)

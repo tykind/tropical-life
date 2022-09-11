@@ -46,6 +46,23 @@ function stringval:set(input : string)
     self.val.Value = input
 end
 
+local objectval = {}
+objectval.__index = objectval
+
+function objectval.new(val : ObjectValue)
+    return setmetatable({
+        val = val
+    }, numval)
+end
+
+function objectval:get()
+    return self.val.Value
+end
+
+function objectval:set(input : ObjectValue)
+    self.val.Value = input
+end
+
 ---> @Section Parsing data
 
 function playerData:parseData(target : Player)
@@ -59,6 +76,7 @@ function playerData:parseData(target : Player)
     return {
         ["cash"] = numval.new(data:FindFirstChild("cash") or Instance.new("NumberValue")),
         ["role"] = stringval.new(data:FindFirstChild("role") or Instance.new("StringValue")),
+        ["house"] = objectval.new(data:FindFirstChild("house") or Instance.new("ObjectValue"))
     }
 end
 

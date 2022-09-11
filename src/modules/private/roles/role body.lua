@@ -5,9 +5,10 @@
 
 local rolebody = {
     scaling = {
-        ["Teen"] = .9,
+        ["Teenager"] = .9,
         ["Kid"] = .7,
-        ["Parent"] = 1
+        ["Parent"] = 1,
+        ["Baby"] = .5
     },
     babyImportantParts = {
         "Torso",
