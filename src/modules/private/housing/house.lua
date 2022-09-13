@@ -73,7 +73,7 @@ end
 
 function house:setPublicConfig(name: string, value: any)
 	local ObjectRefConfig = self.ObjectRef:FindFirstChildOfClass("Configuration")
-	assert(ObjectRefConfig, "expected house configuration")
+	assert(ObjectRefConfig, "expected property configuration")
 	ObjectRefConfig[name].Value = value
 end
 
@@ -95,14 +95,14 @@ function house:purchase(target: Player, onceLeft: (any...) -> () | nil)
 
 	--> @Info Now handle purchasing
 	local data = PlayerDataParser:parseData(target)
-	local fullPrice = self.Price + self:getTax()
+	local fullPrice = self.Price
 
 	assert(data, "not loaded yet?")
-    assert(not(data.house:get()), "You already own a house")
+    assert(not(data.house:get()), "You already own a property")
 	assert(fullPrice <= data.cash:get(), "not enough money")
 
 	--> @Info Remove their money and set their house reference
-	data.cash:sub(fullPrice) --> Remove money and tax the money
+	data.cash:sub(fullPrice) --> Remove money
 	data.house:set(self.ObjectRef) --> Give them house reference
 
 	self:setOwner(target, onceLeft)

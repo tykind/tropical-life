@@ -81,11 +81,11 @@ for _, pad in pairs(rolePadsFolder:GetChildren()) do
 					--> @CHANGE_PLAYER_SCALE
 					local scalingPercent = rolesBody.scaling[roleName]
 					if scalingPercent then
-						task.spawn(function()
+						-- task.spawn(function()
 							rolesBody:normalScale(target, char, scalingPercent)
-						end)
-						target:LoadCharacter()
-						playerData.role:set(roleName)
+						-- end)
+						-- target:LoadCharacter()
+						-- playerData.role:set(roleName)
 
 						--> @SET_PLAYER_TEAM
 						if teamObj then

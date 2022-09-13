@@ -50,46 +50,46 @@ end
 ---> @Section Main functions
 
 function rolebody:normalScale(player : Player, character : Model, percent : number)
-    local oldCFrame = character.PrimaryPart.CFrame
+    -- local oldCFrame = character.PrimaryPart.CFrame
 
-    character = player.CharacterAdded:Wait()
-    repeat task.wait() until character:FindFirstChild("Head")
-
+    -- character = player.CharacterAdded:Wait()
     local humanoid = character:WaitForChild("Humanoid", 5)
   
-    if humanoid.RigType == Enum.HumanoidRigType.R6 then --> @HANDLE_R6_SCALING
-        for _, obj in pairs(character:GetDescendants()) do
-            if obj:IsA("Motor6D") then
-                obj.C0 = CFrame.new((obj.C0.Position * percent)) * (obj.C0 - obj.C0.Position)
-			    obj.C1 = CFrame.new((obj.C1.Position * percent)) * (obj.C1 - obj.C1.Position)
-            end
-        end
+    -- if humanoid.RigType == Enum.HumanoidRigType.R6 then --> @HANDLE_R6_SCALING
+    --     for _, obj in pairs(character:GetDescendants()) do
+    --         if obj:IsA("Motor6D") then
+    --             obj.C0 = CFrame.new((obj.C0.Position * percent)) * (obj.C0 - obj.C0.Position)
+	-- 		    obj.C1 = CFrame.new((obj.C1.Position * percent)) * (obj.C1 - obj.C1.Position)
+    --         end
+    --     end
 		
-		for _, obj in pairs(character:GetDescendants()) do
-			if obj:IsA("BasePart") then
-                obj.Size = obj.Size * percent
-            elseif(obj:IsA("Accessory")) then
-                obj.Handle.AccessoryWeld.C0 = CFrame.new((obj.Handle.AccessoryWeld.C0.Position * percent)) * 
-                    (obj.Handle.AccessoryWeld.C0 - obj.Handle.AccessoryWeld.C0.Position)
+	-- 	for _, obj in pairs(character:GetDescendants()) do
+	-- 		if obj:IsA("BasePart") then
+    --             obj.Size = obj.Size * percent
+    --         elseif(obj:IsA("Accessory")) then
+    --             obj.Handle.AccessoryWeld.C0 = CFrame.new((obj.Handle.AccessoryWeld.C0.Position * percent)) * 
+    --                 (obj.Handle.AccessoryWeld.C0 - obj.Handle.AccessoryWeld.C0.Position)
                     
-                obj.Handle.AccessoryWeld.C1 = CFrame.new((obj.Handle.AccessoryWeld.C1.Position * percent)) * 
-                    (obj.Handle.AccessoryWeld.C1 - obj.Handle.AccessoryWeld.C1.Position)
+    --             obj.Handle.AccessoryWeld.C1 = CFrame.new((obj.Handle.AccessoryWeld.C1.Position * percent)) * 
+    --                 (obj.Handle.AccessoryWeld.C1 - obj.Handle.AccessoryWeld.C1.Position)
 
-                obj.Handle.Mesh.Scale *= percent	
-            end
-		end
-    elseif(humanoid.RigType == Enum.HumanoidRigType.R15) then --> @HANDLE_R15_SCALING
+    --             obj.Handle.Mesh.Scale *= percent	
+    --         end
+	-- 	end
+    -- elseif(humanoid.RigType == Enum.HumanoidRigType.R15) then --> @HANDLE_R15_SCALING
 		local desc = humanoid:GetAppliedDescription()
+        local scaleNumber = 1 * percent --> 1 being the default scale
+       
 
-		desc.DepthScale *= percent
-		desc.HeadScale *= percent
-		desc.HeightScale *= percent
-		desc.ProportionScale *= percent
-		desc.WidthScale *= percent
+		desc.DepthScale = scaleNumber
+		desc.HeadScale = scaleNumber
+		desc.HeightScale = scaleNumber
+		desc.ProportionScale = scaleNumber
+		desc.WidthScale = scaleNumber
 
 		humanoid:ApplyDescription(desc)
-    end
-    character.HumanoidRootPart.CFrame = oldCFrame
+    -- end
+    -- character.HumanoidRootPart.CFrame = oldCFrame
 end
 
 function rolebody:makeBaby(player : Player, character : Model)

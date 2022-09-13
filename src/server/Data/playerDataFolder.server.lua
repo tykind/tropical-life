@@ -3,7 +3,7 @@
 local Players = game:GetService('Players')
 local allowReflectObj = {
     cash = {
-        ReflectiveName = "[ Cash ]"
+        ReflectiveName = "Cash"
     },
 }
 

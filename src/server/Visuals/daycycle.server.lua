@@ -15,6 +15,6 @@ local function tweenTime(to : number, speed : number?, sync : boolean?)
 end
 
 --> @Note Run day and night cycle
-while true do task.wait(10)
+while true do task.wait(65)
     tweenTime(.5, .5)
 end
