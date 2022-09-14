@@ -75,6 +75,7 @@ function playerData:parseData(target : Player)
 
     return {
         ["cash"] = numval.new(data:FindFirstChild("cash") or Instance.new("NumberValue")),
+        ["playTime"] = numval.new(data:FindFirstChild("play time") or Instance.new("NumberValue")),
         ["role"] = stringval.new(data:FindFirstChild("role") or Instance.new("StringValue")),
         ["house"] = objectval.new(data:FindFirstChild("house") or Instance.new("ObjectValue"))
     }

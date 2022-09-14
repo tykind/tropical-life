@@ -99,4 +99,42 @@ function Data:safe_set(key, data)
 	end)
 end
 
+function Data:makeNumberLeaderboard(folder : Folder, time : number, filterKey : (string) -> string)
+	task.spawn(function()
+
+		local function updateFolder()
+			local pages = self.conn:GetSortedAsync(true, 20)
+			local top20 = pages:GetCurrentPage()
+
+			for _, info in pairs(top20) do
+				local name = filterKey(info.key)
+				local num = info.value
+
+				local found = folder:FindFirstChild(name)
+				if found then
+					--> @Update current one
+					found.Value = num
+				else
+					local childs = folder:GetChildren()
+					if #childs >= 20 then
+						childs[#childs]:Destroy()
+					end
+
+					local createdNum = Instance.new("NumberValue")
+					createdNum.Name = name
+					createdNum.Value = num
+				
+					createdNum.Parent = folder
+				end
+			end
+		end
+
+		updateFolder()
+
+		while true do task.wait(120)
+			updateFolder()
+		end
+	end)
+end
+
 return Data

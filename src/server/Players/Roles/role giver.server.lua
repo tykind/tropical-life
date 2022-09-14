@@ -10,9 +10,50 @@ local quickPublicData = require(ReplicatedStorage.Modules.quickData)
 local rolesBody = require(quickPrivateData.modules["Role body"].Module)
 local dataParser = require(quickPublicData.modules["Data parser"].Module)
 
+local Tools = ServerStorage:WaitForChild("Tools", 5)
+
 local Teams = game:GetService("Teams")
+local roleTools = {
+	["Parent"] = {
+		"Stroller"
+	}
+}
 
 ---> @Section Additional utilities
+
+local function toolNotFound(plr : Player, name : string)
+	--> @Info First test
+	for _, toolName in pairs(plr.Backpack:GetChildren()) do
+		if toolName == name then
+			return
+		end
+	end
+
+	--> @Info Second test
+	local Character = plr.Character
+	if Character then
+		for _, Obj in pairs(Character:GetDescendants()) do
+			if Obj:IsA("Tool") and Obj.Name == name then
+				return
+			end
+		end
+	end
+
+	return true
+end
+
+local function giveTool(plr : Player, role : string)
+	local toGiveList = roleTools[role]
+	if toGiveList then
+		for _, tool in pairs(Tools:GetChildren()) do
+			if table.find(toGiveList, tool.Name) and toolNotFound(plr, tool.Name) then
+				local t = tool:Clone()
+				t.Parent = plr.Backpack
+				print(t)
+			end
+		end
+	end
+end
 
 local function isCharacter(obj)
 	while true do task.wait() 
@@ -62,6 +103,7 @@ for _, pad in pairs(rolePadsFolder:GetChildren()) do
 				playerConnections[target.UserId].CharacterAdded = target.CharacterAdded:Connect(function()
 					target.Team =  Teams:FindFirstChild("Parent")
 					playerData.role:set("Parent") --> @SET_PARENT_DEFAULT
+					giveTool(target, "Parent")
 				end)
 			end
 
@@ -87,6 +129,9 @@ for _, pad in pairs(rolePadsFolder:GetChildren()) do
 						-- target:LoadCharacter()
 						-- playerData.role:set(roleName)
 
+						--> @GIVE_TOOL
+						giveTool(target, roleName)
+
 						--> @SET_PLAYER_TEAM
 						if teamObj then
 							target.Team = teamObj
@@ -97,3 +142,8 @@ for _, pad in pairs(rolePadsFolder:GetChildren()) do
         end
     end)
 end
+
+Players.PlayerAdded:Connect(function(player)
+	player.CharacterAdded:Wait()
+	giveTool(player, "Parent")
+end)

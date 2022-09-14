@@ -78,7 +78,7 @@ function rolebody:normalScale(player : Player, character : Model, percent : numb
 	-- 	end
     -- elseif(humanoid.RigType == Enum.HumanoidRigType.R15) then --> @HANDLE_R15_SCALING
 		local desc = humanoid:GetAppliedDescription()
-        local scaleNumber = 1 * percent --> 1 being the default scale
+        local scaleNumber = .9 * percent --> 1 being the default scale
        
 
 		desc.DepthScale = scaleNumber

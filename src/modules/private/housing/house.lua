@@ -25,7 +25,6 @@ function house.new(actualObject: Model, taxGen: (number) -> (number))
     for _, houseFunctions in pairs(script.Parent.functions:GetChildren()) do
         if houseFunctions.Name == actualObject.Configuration.Class.Value then
             local funcs = require(houseFunctions)
-            print(funcs)
 
             createHouse.setup = funcs.setup
             createHouse.reset = funcs.reset
