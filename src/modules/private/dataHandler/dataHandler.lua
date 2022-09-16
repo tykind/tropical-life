@@ -43,6 +43,15 @@ function Data:CallUpdate(...)
 	end
 end
 
+
+function Data:sortValues(from)
+	local sorted = from
+	table.sort(sorted, function(x, y)
+		return x.Value > y.Value
+	end)
+	return sorted
+end
+
 ---> @Section Base functions
 -------------
 
@@ -99,9 +108,8 @@ function Data:safe_set(key, data)
 	end)
 end
 
-function Data:makeNumberLeaderboard(folder : Folder, time : number, filterKey : (string) -> string)
+function Data:makeNumberLeaderboard(folder : Folder, amount : number, time : number, filterKey : (string) -> string, debugName : string?)
 	task.spawn(function()
-
 		local function updateFolder()
 			local pages = self.conn:GetSortedAsync(true, 20)
 			local top20 = pages:GetCurrentPage()
@@ -110,14 +118,31 @@ function Data:makeNumberLeaderboard(folder : Folder, time : number, filterKey : 
 				local name = filterKey(info.key)
 				local num = info.value
 
+				--> @Info Check if key is userid (NO TEST SUBJECTS IN HERE)
+				local userId = tonumber(name)
+				if userId and userId < 0 then
+					continue
+				end
+
 				local found = folder:FindFirstChild(name)
 				if found then
 					--> @Update current one
 					found.Value = num
 				else
-					local childs = folder:GetChildren()
-					if #childs >= 20 then
-						childs[#childs]:Destroy()
+					local childs = self:sortValues(folder:GetChildren())
+					if #childs >= amount then
+						local Child = childs[#childs]
+						
+						if Child.Value >= num then
+							if debugName then
+								print(debugName)
+							end
+							print(Child.Name, name)
+							print(Child.Value, num)
+							continue
+						end
+
+						Child:Destroy()
 					end
 
 					local createdNum = Instance.new("NumberValue")
@@ -131,7 +156,7 @@ function Data:makeNumberLeaderboard(folder : Folder, time : number, filterKey : 
 
 		updateFolder()
 
-		while true do task.wait(120)
+		while true do task.wait(time)
 			updateFolder()
 		end
 	end)

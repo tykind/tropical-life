@@ -109,6 +109,6 @@ end)
 local timeLeaderboard = Instance.new("Folder", ReplicatedStorage)
 timeLeaderboard.Name = "timeLeaderboard"
 
-playedTimeHandler:makeNumberLeaderboard(timeLeaderboard, 120, (function(key)
+playedTimeHandler:makeNumberLeaderboard(timeLeaderboard, 6, 120, (function(key)
 	return key:gsub("+%-", ""):gsub("%-%+", "")
 end))

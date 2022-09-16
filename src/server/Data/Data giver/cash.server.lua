@@ -5,6 +5,7 @@ local RunService = game:GetService("RunService")
 local ServerStorage = game:GetService("ServerStorage")
 local TeleportService = game:GetService("TeleportService")
 local MarketplaceService = game:GetService("MarketplaceService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local quickData = require(ServerStorage.Modules.quickData)
 
@@ -103,3 +104,10 @@ game:BindToClose(function()
 		task.synchronize()
 	end)
 end)
+
+local cashLeaderboard = Instance.new("Folder", ReplicatedStorage)
+cashLeaderboard.Name = "cashLeaderboard"
+
+cashHandler:makeNumberLeaderboard(cashLeaderboard, 6, 120, (function(key)
+	return key:gsub("+%-", ""):gsub("%-%+", "")
+end))

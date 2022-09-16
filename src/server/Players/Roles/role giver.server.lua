@@ -49,7 +49,6 @@ local function giveTool(plr : Player, role : string)
 			if table.find(toGiveList, tool.Name) and toolNotFound(plr, tool.Name) then
 				local t = tool:Clone()
 				t.Parent = plr.Backpack
-				print(t)
 			end
 		end
 	end
