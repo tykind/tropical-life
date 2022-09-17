@@ -40,7 +40,7 @@ export type UIText = {
     get : (self : UIText) -> string,
     set : (self : UIText, what : string) -> (),
     destroyKnownConnection : (self : UIText, name : string) -> (),
-    new : (self : UIText, button : GuiMain, labelType : number?) -> UIText
+    new : (self : UIText, textlabel : GuiMain, labelType : number?) -> UIText
 }
 
 
@@ -52,6 +52,18 @@ export type UIPages = {
     processPage : (self : UIPages, page : PagePair) -> (),
     setMainPage : (self : UIPages, page : PagePair) -> boolean,
     setupLiseners : (self : UIPages) -> UIPages,
+}
+
+export type UITbox = {
+    Parent : GuiMain?,
+    Object : TextBox?,
+    Connections : Array<RBXScriptConnection>,
+
+    get : (self : UITbox) -> string,
+    set : (self : UITbox, what : string) -> (),
+    destroyKnownConnection : (self : UITbox, name : string) -> (),
+    bindFocusAndUnchagned : (onFocus : (UITbox) -> ()?, onFocusRelease : (UITbox) -> ()?) -> (),
+    new : (self : UITbox, textbox : GuiMain, labelType : number?) -> UITbox
 }
 
 return nil

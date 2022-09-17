@@ -42,6 +42,10 @@ local quickData = {
             Description = "Pages class",
             Module = script.Parent.ui.classes['pages']
         }, moduleitem),
+        ["UITbox"] = setmetatable({
+            Description = "Pages class",
+            Module = script.Parent.ui.classes['textbox']
+        }, moduleitem),
         ["UILib"] = setmetatable({
             Description = "User interface library",
             Module = script.Parent.ui.ui

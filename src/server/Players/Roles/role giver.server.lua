@@ -102,6 +102,7 @@ for _, pad in pairs(rolePadsFolder:GetChildren()) do
 				playerConnections[target.UserId].CharacterAdded = target.CharacterAdded:Connect(function()
 					target.Team =  Teams:FindFirstChild("Parent")
 					playerData.role:set("Parent") --> @SET_PARENT_DEFAULT
+					task.wait(.3)
 					giveTool(target, "Parent")
 				end)
 			end
