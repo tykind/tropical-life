@@ -1,11 +1,15 @@
 --> @Desc Housing system set up
 --> @Author Tykind
-local Players = game:GetService("Players")
 local ServerStorage = game:GetService("ServerStorage")
 local ProximityPromptService = game:GetService("ProximityPromptService")
-local quickData = require(ServerStorage.Modules["quickData"])
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local quickData = require(ServerStorage.Modules["quickData"])
+local Remotes = ReplicatedStorage.Remotes
+
+local PlayerDataParser = require(quickData.modules["Data parser"].Module)
 local Housing = require(quickData.modules["Housing"].Module)
+local toggleHouseLockEvent : RemoteEvent = Remotes.Client.toggleHouseLock
 
 ---> @Section Housing constants
 
@@ -58,3 +62,14 @@ for _, HouseObj in pairs(workspace.Houses:GetChildren()) do
 
     House:setCanPurchase(true) --> Allow players to buy it
 end
+
+toggleHouseLockEvent.OnServerEvent:Connect(function(player)
+	local playerData = PlayerDataParser:parseData(player)
+
+	if playerData.house:get() then
+		local Door = playerData.house:get():FindFirstChild("Door")
+		if Door then
+			Door.CanCollide = not Door.CanCollide
+		end
+	end
+end)
