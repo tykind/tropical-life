@@ -47,6 +47,18 @@ function btn:registerOnClick(func : () -> (), name : string?) : RBXScriptConnect
     return conn
 end
 
+function btn:changeImage(id : number) 
+    if self.Object:IsA("ImageButton") then
+        self.Object.Image = ("rbxassetid://%d"):format(id)
+    end
+end
+
+function btn:getImage() : string
+    if self.Object:IsA("ImageButton") then
+        return self.Object.Image
+    end
+end
+
 function btn:destroy()
     self.Object:Destroy()
     table.clear(self.Connections)

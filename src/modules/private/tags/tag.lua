@@ -2,16 +2,19 @@
 --> @Author Tykind
 local Players = game:GetService("Players")
 local ServerStorage = game:GetService("ServerStorage")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local MarketplaceService = game:GetService("MarketplaceService")
 local TextService = game:GetService("TextService")
 
 local playerTag = ServerStorage:FindFirstChild("PlayerTag")
+local families = ReplicatedStorage.Families
 
 ---> @Section Library starter
 
 export type tag = {
     Player: Player,
     Nickname: string?,
+    Family: string?,
     TagObject: BillboardGui,
 
     new:  (player : Player, tagsFolder : Folder, ...any) -> tag,
@@ -82,11 +85,43 @@ function tag.new(player : Player, tagsFolder : Folder) : tag
     characterSpawned(player.Character or player.CharacterAdded:Wait())
     player.CharacterAdded:Connect(characterSpawned)
 
+    ---> @Section Custom shit
+
+    --> @SUBSEC Family tag
+    families.DescendantAdded:Connect(function(descendant)
+        if not descendant:IsA("Folder") then
+            if descendant.Name == tostring(tag.Player.UserId) then
+                local OwnerName = tag:getPlayerNameInGame(tonumber(descendant.Parent.Name))
+                clonedTag.Family.Text = ("%s's family"):format(OwnerName)
+                clonedTag.Family.Visible = true
+            end
+        end
+    end)
+
+    families.DescendantRemoving:Connect(function(descendant)
+        if not descendant:IsA("Folder") then
+            if descendant.Name == tostring(tag.Player.UserId) then
+                clonedTag.Family.Visible = false
+            end
+        end
+    end)
+
     return tag
 end
 
 function tag:playerHasDisplayName()
     return self.Player.Name ~= self.Player.DisplayName
+end
+
+function tag:getPlayerNameInGame(userId : number)
+	local ourPlayer : Player = Players:GetPlayerByUserId(userId)
+	local name = "Guest"
+	
+	if ourPlayer then
+		name = if ourPlayer.Name ~= ourPlayer.DisplayName then ourPlayer.DisplayName else ourPlayer.Name		
+	end
+	
+	return name
 end
 
 function tag:setDefaultNames()
