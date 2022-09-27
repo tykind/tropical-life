@@ -50,6 +50,10 @@ local quickData = {
             Description = "User interface library",
             Module = script.Parent.ui.ui
         }, moduleitem),
+        ["Bundle Ids"] = setmetatable({
+            Description = "List of all bundles",
+            Module = script.Parent.data.bundles
+        }, moduleitem),
     }
 }
 

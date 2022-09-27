@@ -10,6 +10,7 @@ local function onReset(self : QuickTypes.House, target : Player)
 
     HouseSurfaceUI.Enabled = false
     Door.CanCollide = true
+    Door.DoorInteraction.Enabled = true
 end
 
 local function setupHouse(self : QuickTypes.House)

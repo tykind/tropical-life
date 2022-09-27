@@ -89,6 +89,8 @@ local actions = {
                     Handler.Parent = owner.PlayerGui
                     Handler.Enabled = true
 
+                    Handler.AcceptFamily.main.TextLabel.Text = ("%s wants to join your family!"):format(if player.Name ~= player.DisplayName then player.DisplayName else player.Name)
+
                     local start = tick()
                     while true do task.wait()
                         if accepted or tick() - start > 15 then
@@ -137,8 +139,14 @@ familyRequest.OnServerEvent:Connect(function(player, actionName : string?, who :
     if #actionName > 20 then return end
 
     local action = actions[actionName]
-    print(actionName, who)
     if action then
         action(player, who)
+    end
+end)
+
+Players.PlayerRemoving:Connect(function(player)
+    local familyObject = familiesFolder:FindFirstChild(tostring(player.UserId), true)
+    if familyObject then
+        familyObject:Destroy()
     end
 end)

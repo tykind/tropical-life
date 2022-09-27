@@ -11,7 +11,9 @@ local QuickTypes = require(quickData.modules["Types"].Module)
 
 local house: QuickTypes.House = {
 	Price = 0,
-	Connections = {}
+	Connections = {},
+	OnSell = {},
+	OnBuy = {}
 }
 house.__index = house
 
@@ -76,6 +78,14 @@ function house:setPublicConfig(name: string, value: any)
 	ObjectRefConfig[name].Value = value
 end
 
+function house:onSell(callback, ...)
+	table.insert(self.OnSell, callback)
+end
+
+function house:onBuy(callback, ...)
+	table.insert(self.OnBuy, callback)
+end
+
 ---> @Section Economics based
 
 function house:generateTax()
@@ -106,6 +116,10 @@ function house:purchase(target: Player, onceLeft: (any...) -> () | nil)
 
 	self:setOwner(target, onceLeft)
 	self.setup(self) --> Set up house stuff
+
+	for _, funcs in pairs(self.OnBuy) do
+		funcs()
+	end
 end
 
 function house:sell(target: Player)
@@ -128,6 +142,10 @@ function house:sell(target: Player)
 	end
 
 	self.Owner = nil
+
+	for _, funcs in pairs(self.OnSell) do
+		funcs()
+	end
 
 	if self.reset then
 		self.reset(self, target)

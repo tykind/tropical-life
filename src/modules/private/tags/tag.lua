@@ -88,12 +88,18 @@ function tag.new(player : Player, tagsFolder : Folder) : tag
     ---> @Section Custom shit
 
     --> @SUBSEC Family tag
+    local onParentLeftConn : RBXScriptConnection
     families.DescendantAdded:Connect(function(descendant)
         if not descendant:IsA("Folder") then
             if descendant.Name == tostring(tag.Player.UserId) then
                 local OwnerName = tag:getPlayerNameInGame(tonumber(descendant.Parent.Name))
                 clonedTag.Family.Text = ("%s's family"):format(OwnerName)
                 clonedTag.Family.Visible = true
+
+                onParentLeftConn = descendant.Parent.Destroying:Connect(function()
+                    clonedTag.Family.Visible = false
+                    onParentLeftConn:Disconnect()
+                end)
             end
         end
     end)
@@ -102,6 +108,10 @@ function tag.new(player : Player, tagsFolder : Folder) : tag
         if not descendant:IsA("Folder") then
             if descendant.Name == tostring(tag.Player.UserId) then
                 clonedTag.Family.Visible = false
+
+                if onParentLeftConn and onParentLeftConn.Connected then
+                    onParentLeftConn:Disconnect()
+                end
             end
         end
     end)
@@ -155,12 +165,11 @@ function tag:setNickname(to : string?)
         self:setDefaultNames()
         return
     end
-    
     assert(#to <= 20, "nickname exceeded max length (20)")
 
     local userName : TextLabel = self.TagObject.Username
     local displayName : TextLabel = self.TagObject.Display
-    
+
     local succ, filteredTextObject = pcall(TextService.FilterStringAsync, TextService, to, self.Player.UserId, Enum.TextFilterContext.PublicChat)
     if not succ then return end
 

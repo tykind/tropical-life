@@ -134,11 +134,6 @@ function Data:makeNumberLeaderboard(folder : Folder, amount : number, time : num
 						local Child = childs[#childs]
 						
 						if Child.Value >= num then
-							if debugName then
-								print(debugName)
-							end
-							print(Child.Name, name)
-							print(Child.Value, num)
 							continue
 						end
 

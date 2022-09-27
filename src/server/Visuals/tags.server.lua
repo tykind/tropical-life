@@ -38,6 +38,7 @@ local function setPremiumTag(self : tag.tag, emoji : string) : boolean
 end
 
 ---> @Section Main handler
+local setOfPeople = {}
 
 Players.PlayerAdded:Connect(function(player)
     local userTag = tag.new(player, TagFolder)
@@ -46,9 +47,26 @@ Players.PlayerAdded:Connect(function(player)
     userTag:gamepassAlterer(79793686, setPremiumTag, {"😎"})
     userTag:gamepassAlterer(79793731, setPremiumTag, {"👑"})
 
-    --> @Info Nicknames
+    table.insert(setOfPeople, {
+        Player = player,
+        UserTag = userTag
+    })
+end)
 
-    changeNickname.OnServerEvent:Connect(function(player : Player, to : string?)
-        return pcall(userTag.setNickname, userTag, to)
-    end)
+Players.PlayerRemoving:Connect(function(player)
+    for i, info in pairs(setOfPeople) do
+        local plr : Player = info[1]
+        if plr == player then
+            table.remove(setOfPeople, i)
+        end
+    end
+end)
+
+changeNickname.OnServerEvent:Connect(function(player : Player, to : string?)
+    for _, info in pairs(setOfPeople) do
+        local plr : Player, tag : tag.tag  = info.Player, info.UserTag
+        if plr == player then
+            return pcall(tag.setNickname, tag, to)
+        end
+    end
 end)

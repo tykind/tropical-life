@@ -1,0 +1,5 @@
+return {
+    ["Hats"] = {},
+    ["Faces"] = {},
+    ["Clothes"] = {},
+}

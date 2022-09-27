@@ -11,6 +11,7 @@ local quickData = require(ServerStorage.Modules.quickData)
 
 local datalib = require(quickData.modules["Data handler"].Module)
 local logger = require(quickData.modules["Log system"].Module)
+local plrdataparser = require(quickData.modules["Data parser"].Module)
 
 local cashContext = logger.new("CASH")
 local cashHandler = datalib.new({
@@ -32,6 +33,7 @@ local defaultCash = 250
 local cashPayoutTime = 120
 
 local twoTimesCashGamepass = 79792768
+local families = ReplicatedStorage.Families
 
 Players.PlayerAdded:Connect(function(plr)
 	local dataFolder = plr:WaitForChild("player data", 5)
@@ -64,6 +66,24 @@ Players.PlayerAdded:Connect(function(plr)
 		cash.Value = if not value or value <= 0 then defaultCash else value
 
 		task.spawn(function()
+			local familyOwner
+
+			families.DescendantAdded:Connect(function(descendant)
+				if not descendant:IsA("Folder") then
+					if descendant.Name == tostring(plr.UserId) then --> @Info our player is a member
+						familyOwner = Players:GetPlayerByUserId(tonumber(descendant.Parent.Name))
+					end
+				end
+			end)
+
+			families.DescendantRemoving:Connect(function(descendant)
+				if not descendant:IsA("Folder") then
+					if descendant.Name == tostring(plr.UserId) then --> @Info our player is a member
+						familyOwner = nil
+					end
+				end
+			end)
+
 			task.desynchronize()
 			while true do task.wait(cashPayoutTime)
 				--> @Note Give money, but also check for multiplication gamepass
@@ -72,6 +92,20 @@ Players.PlayerAdded:Connect(function(plr)
 					receivedMoney *= 2
 				end
                 cash.Value += receivedMoney
+
+				--> @Special Give to family members
+				if not familyOwner then
+					local ourFamily = families:FindFirstChild(tostring((plr.UserId)))
+					if ourFamily then
+						for _, memberPtr : ObjectValue in pairs(ourFamily:GetChildren()) do
+							local memberData = plrdataparser:parseData(memberPtr.Value)
+							memberData.cash:add(receivedMoney / 2) --> @Info Give 50% to family as well
+						end
+					end
+				else
+					local ownerData = plrdataparser:parseData(familyOwner)
+					ownerData.cash:add(receivedMoney / 2)
+				end
 			end
 			task.synchronize()
 		end)

@@ -28,4 +28,13 @@ function housing:createHouse(object : Model, taxGen : (number) -> (number))
     return house
 end
 
+function housing:getHouseFromPlayer(player : Player)
+    for _, House : QuickTypes.House in pairs(self.Houses) do
+        if House.Owner == player then
+            --> @Info Found our house
+            return House
+        end
+    end
+end
+
 return housing
