@@ -2,86 +2,86 @@ return {
     {
         Id = 182,
         Name = "Blue collar cat",
-        Price = 5
+        Price = 50
     },
     {
         Id = 131,
         Name = "Furious Finn",
-        Price = 6
+        Price = 60
     },
     {
         Id = 219,
         Name = "The Crook",
-        Price = 6 
+        Price = 60
     },
     {
         Id = 284,
         Name = "Penguin",
-        Price = 6
+        Price = 60
     },
     {
         Id = 215,
         Name = "Bombo",
-        Price = 8
+        Price = 80
     },
     {
         Id = 151,
         Name = "Golden Suit of Bling Squared",
-        Price = 12
+        Price = 120
     },
     {
         Id = 57,
         Name = "Ten Million Robux Man",
-        Price = 12
+        Price = 120
     },
     {
         Id = 11,
         Name = "White Collar Dog",
-        Price = 12
+        Price = 120
     },
     {
         Id = 182,
         Name = "Blue Collar Cat",
-        Price = 8
+        Price = 80
     },
     {
         Id = 248,
         Name = "Captain Crimson Jack",
-        Price = 8
+        Price = 80
     },
     {
         Id = 186,
         Name = "Team Roblox Ski",
-        Price = 9
+        Price = 90
     },
     {
         Id = 592,
         Name = "Davy Bazooka",
-        Price = 5
+        Price = 50
     },
     {
         Id = 795,
         Name = "KSI",
-        Price = 5
+        Price = 50
     },
     {
         Id = 229,
         Name = "Redcliff Elite Commander",
-        Price = 6
+        Price = 60
     },
     {
         Id = 276,
         Name = "Agent 53",
-        Price = 8
+        Price = 80
     },
     {
         Id = 874,
         Name = "Bubba Doll",
-        Price = 10
+        Price = 100
     },
     {
         Id = 162,
         Name = "Circuit Breaker",
-        Price = 10
+        Price = 100
     }
 }
