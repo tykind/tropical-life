@@ -1,5 +1,5 @@
 --> @Desc Gives tools connected to gamepasses
---> @Author Tykind
+--> @Author Tykind and forbrad
 local Players = game:GetService("Players")
 local ServerStorage = game:GetService("ServerStorage")
 local MarketplaceService = game:GetService("MarketplaceService")
@@ -8,39 +8,52 @@ local Tools = ServerStorage.Tools
 
 ---> @Section Main handler
 
-local function toolCheck(player : Player, ourToolList : {[number] : Tool})
-    for idx, tool : Tool in pairs(ourToolList) do
-        local gamepassValue : NumberValue = tool:FindFirstChild("gamepassId")
 
-        if MarketplaceService:UserOwnsGamePassAsync(player.UserId, gamepassValue.Value) then
-            --> @Info Make the player accquire the tools
-            local permanentTool = tool:Clone()
-            permanentTool.Parent = player:WaitForChild("StarterGear", 5)
+local toollist = {}
 
-            local backpackTool = tool:Clone()
-            backpackTool.Parent = player.Backpack
-            
-            table.remove(ourToolList, idx)
-        end
-    end
+local function addtool(player, tool)
+	
+	local permanentTool = tool:Clone()
+	permanentTool.Parent = player:WaitForChild("StarterGear", 5)
+
+	local backpackTool = tool:Clone()
+	backpackTool.Parent = player.Backpack
+
 end
 
-Players.PlayerAdded:Connect(function(player)
-    local ourToolList = Tools:GetChildren()
-    
-    --> @Info Filter tools
-    for idx, tool in pairs(ourToolList) do
-        if not tool:FindFirstChild("gamepassId") then
-            table.remove(ourToolList, idx)            
-        end
-    end
 
-    toolCheck(player, ourToolList) --> @Info Quick now
 
-    while true do task.wait(5)
-        if #ourToolList == 0 then
-            break
-        end
-        toolCheck(player, ourToolList)
-    end
+game.Players.PlayerAdded:Connect(function(player) 
+	
+	toollist[player.UserId] = Tools:GetChildren()
+	
+	for idx, tool in pairs(toollist[player.UserId]) do
+		if not tool:FindFirstChild("gamepassId") then
+			table.remove(toollist[player.UserId], idx)     
+		else
+			if MarketplaceService:UserOwnsGamePassAsync(player.UserId, tool.gamepassId.Value) then
+				addtool(player, tool)
+			end
+		end
+	end
+	
+	
 end)
+
+game.Players.PlayerRemoving:Connect(function(player) 
+	toollist[player.UserId]  = nil 
+end)
+
+game:GetService("MarketplaceService").PromptGamePassPurchaseFinished:Connect(function(player, pass_id, was_purchased)
+	if was_purchased then
+		for idx, tool in pairs(toollist[player.UserId]) do
+			if tool.gamepassId.Value == pass_id then
+				addtool(player, tool)
+			end
+		end
+		 
+	end
+end)
+
+
+
