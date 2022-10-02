@@ -2,6 +2,7 @@
 --> @Author Tykind
 local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
+local TestService = game:GetService("TestService")
 local quickData = require(script.Parent.Parent.quickData)
 
 local PlayerDataParser = require(quickData.modules["Data parser"].Module)
@@ -167,7 +168,10 @@ Players.PlayerAdded:Connect(function(player)
 		if houseInfo.UserId == player.UserId then
 			--> @Info Found our player
 			local Home : QuickTypes.House = houseInfo.House
-			pcall(Home.sell, Home, player, true) --> Sell money safely without giving out money (since it's unsafe, might not add anyways)
+			local succ, err = pcall(Home.sell, Home, player, true) --> Sell money safely without giving out money (since it's unsafe, might not add anyways)
+			if not succ then 
+				TestService:Fail(("[house-sys] - %s"):format(err)) --> Log error
+			end
 			break
 		end
 	end
