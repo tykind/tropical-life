@@ -8,12 +8,12 @@ local PlayerDataParser = require(quickData.modules["Data parser"].Module)
 local QuickTypes = require(quickData.modules["Types"].Module)
 
 ---> @Section Basic functions
-
+local currentOwners = {}
 local house: QuickTypes.House = {
 	Price = 0,
 	Connections = {},
 	OnSell = {},
-	OnBuy = {}
+	OnBuy = {},
 }
 house.__index = house
 
@@ -57,19 +57,25 @@ function house:setOwner(target: Player, onceLeft: (any...) -> () | nil)
 	--> @Info Disconnect old connection if it exists
 	self.Owner = target
 
-	--> @Info Create connection and execute left
-	self.Connections["PlayerLeft"] = Players.PlayerRemoving:Connect(function(plr)
-		if plr == target then
-			--> @Info now since the owner left we can also call the provided function
-			self.Owner = nil
+	-- --> @Info Create connection and execute left
+	-- self.Connections["PlayerLeft"] = Players.PlayerRemoving:Connect(function(plr)
+	-- 	if plr == target then
+	-- 		--> @Info now since the owner left we can also call the provided function
+	-- 		self.Owner = nil
 
-			if onceLeft then
-				onceLeft(self, target)
-			elseif self.reset then
-				self.reset(self, target)
-			end
-		end
-	end)
+	-- 		if onceLeft then
+	-- 			onceLeft(self, target)
+	-- 		elseif self.reset then
+	-- 			self.reset(self, target)
+	-- 		end
+	-- 	end
+	-- end)
+
+	--> @Info Adding player to a queue of removing
+	table.insert(currentOwners, {
+		UserId = target.UserId,
+		House = self
+	})
 end
 
 function house:setPublicConfig(name: string, value: any)
@@ -134,12 +140,12 @@ function house:sell(target: Player)
 	data.cash:add(self.Price - afterPercentage)
 	data.house:set(nil)
 
-	if self.Connections["PlayerLeft"] then
-		local conn: RBXScriptConnection = self.Connections["PlayerLeft"]
-		self.Connections["PlayerLeft"] = nil
+	-- if self.Connections["PlayerLeft"] then
+	-- 	local conn: RBXScriptConnection = self.Connections["PlayerLeft"]
+	-- 	self.Connections["PlayerLeft"] = nil
 
-		conn:Disconnect()
-	end
+	-- 	conn:Disconnect()
+	-- end
 
 	self.Owner = nil
 
@@ -151,5 +157,16 @@ function house:sell(target: Player)
 		self.reset(self, target)
 	end
 end
+
+Players.PlayerAdded:Connect(function(player)
+	for _, houseInfo in pairs(currentOwners) do
+		if houseInfo.UserId == player.UserId then
+			--> @Info Found our player
+			local Home : QuickTypes.House = houseInfo.House
+			Home:sell(player) --> Sell house
+			break
+		end
+	end
+end)
 
 return house
