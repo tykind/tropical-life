@@ -31,7 +31,7 @@ export type House = {
     generateTax : (self : House) -> nil,
     getTax : (self : House) -> number,
     purchase : (self : House, target : Player, onceLeft : (any...) -> () | nil) -> nil,
-    sell : (self : House, target : Player) -> nil
+    sell : (self : House, target : Player, ignoreReturn : boolean?) -> nil
 }
 
 export type HousingSystem = {

@@ -128,17 +128,21 @@ function house:purchase(target: Player, onceLeft: (any...) -> () | nil)
 	end
 end
 
-function house:sell(target: Player)
+function house:sell(target: Player, ignoreReturn : boolean?)
 	assert(target == self.Owner, "you aren't the owner")
 
-	local data = PlayerDataParser:parseData(target)
-	assert(data, "not loaded yet?")
 
-	--> @Info give them a small percentage of the original price and remove ownership
-	local afterPercentage = (self.Price * 80 / 100)
+	--> @Info Check if we ignore the return of money
+	if not ignoreReturn then
+		local data = PlayerDataParser:parseData(target)
+		assert(data, "not loaded yet?")
 
-	data.cash:add(self.Price - afterPercentage)
-	data.house:set(nil)
+		--> @Info give them a small percentage of the original price and remove ownership
+		local afterPercentage = (self.Price * 80 / 100)
+
+		data.cash:add(self.Price - afterPercentage)
+		data.house:set(nil)
+	end
 
 	-- if self.Connections["PlayerLeft"] then
 	-- 	local conn: RBXScriptConnection = self.Connections["PlayerLeft"]
@@ -163,7 +167,7 @@ Players.PlayerAdded:Connect(function(player)
 		if houseInfo.UserId == player.UserId then
 			--> @Info Found our player
 			local Home : QuickTypes.House = houseInfo.House
-			Home:sell(player) --> Sell house
+			pcall(Home.sell, Home, player, true) --> Sell money safely without giving out money (since it's unsafe, might not add anyways)
 			break
 		end
 	end
