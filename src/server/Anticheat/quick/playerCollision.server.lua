@@ -1,9 +1,11 @@
+--> @Desc Collision system
+--> @Author Tykind
 local PhysicsService = game:GetService('PhysicsService')
 local Players = game:GetService("Players")
 
 pcall(function()
-	local CollideGroup = PhysicsService:CreateCollisionGroup('Players')
-	PhysicsService:CollisionGroupSetCollidable('Players','Players',false)
+	PhysicsService:CreateCollisionGroup('Players')
+	PhysicsService:CollisionGroupSetCollidable('Players', 'Players', false)
 end)
 
 Players.PlayerAdded:Connect(function(Player)
