@@ -85,7 +85,7 @@ for _, HouseObj in pairs(workspace.Houses:GetChildren()) do
     House:setCanPurchase(true) --> Allow players to buy it
 end
 
----> @Section Handle door lock machanism
+---> @Section Handle house even stuff
 
 houseEvent.OnServerEvent:Connect(function(player, eventName : string)
 	if #eventName > 20 then return end --> Security reason

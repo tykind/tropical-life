@@ -21,12 +21,8 @@ local function addtool(player, tool)
 
 end
 
-
-
-game.Players.PlayerAdded:Connect(function(player) 
-	
+Players.PlayerAdded:Connect(function(player) 
 	toollist[player.UserId] = Tools:GetChildren()
-	
 	for idx, tool in pairs(toollist[player.UserId]) do
 		if not tool:FindFirstChild("gamepassId") then
 			table.remove(toollist[player.UserId], idx)     
@@ -36,15 +32,13 @@ game.Players.PlayerAdded:Connect(function(player)
 			end
 		end
 	end
-	
-	
 end)
 
-game.Players.PlayerRemoving:Connect(function(player) 
+Players.PlayerRemoving:Connect(function(player) 
 	toollist[player.UserId]  = nil 
 end)
 
-game:GetService("MarketplaceService").PromptGamePassPurchaseFinished:Connect(function(player, pass_id, was_purchased)
+MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(player, pass_id, was_purchased)
 	if was_purchased then
 		for idx, tool in pairs(toollist[player.UserId]) do
 			if tool.gamepassId.Value == pass_id then
@@ -54,6 +48,3 @@ game:GetService("MarketplaceService").PromptGamePassPurchaseFinished:Connect(fun
 		 
 	end
 end)
-
-
-
