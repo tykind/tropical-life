@@ -40,11 +40,10 @@ end)
 
 MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(player, pass_id, was_purchased)
 	if was_purchased then
-		for idx, tool in pairs(toollist[player.UserId]) do
+		for _, tool in pairs(toollist[player.UserId]) do
 			if tool.gamepassId.Value == pass_id then
 				addtool(player, tool)
 			end
 		end
-		 
 	end
 end)
