@@ -8,6 +8,7 @@ local QuickTypes = require(quickData.modules.Types.Module)
 
 local Data = {}
 Data.__index = Data
+Data.MaxLeaderboardCount = 20
 
 ---> @Section Starting/Common functions
 -------------
@@ -109,9 +110,10 @@ function Data:safe_set(key, data)
 end
 
 function Data:makeNumberLeaderboard(folder : Folder, amount : number, time : number, filterKey : (string) -> string, debugName : string?)
+	assert(amount <= self.MaxLeaderboardCount, "expected amount to be lower or the maximum amount of players in the data module")
 	task.spawn(function()
 		local function updateFolder()
-			local pages = self.conn:GetSortedAsync(true, 20)
+			local pages = self.conn:GetSortedAsync(true, self.MaxLeaderboardCount)
 			local top20 = pages:GetCurrentPage()
 
 			for _, info in pairs(top20) do

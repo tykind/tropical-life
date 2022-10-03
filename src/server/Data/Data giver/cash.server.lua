@@ -24,16 +24,50 @@ local cashHandler = datalib.new({
 	Leaderboard = nil,
 })
 
+local rewardContext = logger.new("REWARD")
+local simpleDailyReward = datalib.new({
+	Global = false,
+	DataStoreName = "dailyReward_v0",
+	KeyMask = "User-USERID",
+	OnUpdate = function(what, ...)
+		rewardContext:log(("Used %s"):format(what))
+	end,
+	Leaderboard = nil,
+})
+
 ---> @Section Set up player cash
 -------------
 
 local Tasks = {}
+local rewardInfo = {
+	Default = 500,
+	GroupPeople = 1500
+}
 
 local defaultCash = 250
 local cashPayoutTime = 120
+local specialGroup = 9674247
 
 local twoTimesCashGamepass = 79792768
 local families = ReplicatedStorage.Families
+
+local Remotes = ReplicatedStorage.Remotes
+local dailyReward = Remotes.Server.dailyReward
+
+
+--> @Utils
+local function safeCall(obj : Instance, what : string, ...)
+    local succ, ret = pcall(obj[what], obj, ...)
+
+    if not succ then
+        print(("safe call err : %s"):format(ret))
+        return
+    end
+
+    return ret
+end
+
+--> @Main code
 
 Players.PlayerAdded:Connect(function(plr)
 	local dataFolder = plr:WaitForChild("player data", 5)
@@ -108,6 +142,31 @@ Players.PlayerAdded:Connect(function(plr)
 				end
 			end
 			task.synchronize()
+		end)
+
+		--> Give daily reward
+		task.spawn(function()
+			local function giveReward()
+				local succ, lastTime = pcall(function()
+					return simpleDailyReward:Get(plr)
+				end) 
+		
+		
+				if succ and not(lastTime) or (tick() - lastTime) > 86400 then
+					--> Just give and set new
+					local amount = if safeCall(plr, "IsInGroup", specialGroup) then rewardInfo.GroupPeople else rewardInfo.Default
+					
+					cash.Value += amount
+					dailyReward:FireClient(plr, amount)
+					safeCall(simpleDailyReward, "Set", plr, tick())
+				end
+			end
+
+			giveReward()
+
+			while true do task.wait(86401) --> lol
+				giveReward()
+			end
 		end)
 
 		table.insert(Tasks, { plr, cash })

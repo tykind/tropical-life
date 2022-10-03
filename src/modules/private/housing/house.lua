@@ -170,7 +170,7 @@ Players.PlayerAdded:Connect(function(player)
 			local Home : QuickTypes.House = houseInfo.House
 			local succ, err = pcall(Home.sell, Home, player, true) --> Sell money safely without giving out money (since it's unsafe, might not add anyways)
 			if not succ then 
-				TestService:Fail(("[house-sys] - %s"):format(err)) --> Log error
+				TestService:Fail(("[HOUSE SYSTEM] - %s"):format(err)) --> Log error
 			end
 			break
 		end
