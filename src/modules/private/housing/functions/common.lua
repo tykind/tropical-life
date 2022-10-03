@@ -1,3 +1,4 @@
+local TestService = game:GetService("TestService")
 local quickData = require(script.Parent.Parent.Parent.quickData)
 
 local PlayerDataParser = require(quickData.modules['Data parser'].Module)
@@ -11,6 +12,8 @@ local function onReset(self : QuickTypes.House, target : Player)
     HouseSurfaceUI.Enabled = false
     Door.CanCollide = true
     Door.DoorInteraction.Enabled = true
+
+    TestService:Message(("Restarted house %s"):format(self.ObjectRef.Name))
 end
 
 local function setupHouse(self : QuickTypes.House)
@@ -21,6 +24,8 @@ local function setupHouse(self : QuickTypes.House)
     HouseSurfaceUI.Owner.Text = ("OWNER -> %s"):format(self.Owner.Name)
     HouseSurfaceUI.Enabled = true
     Door.CanCollide = false
+
+    TestService:Message(("Set up house %s"):format(self.ObjectRef.Name))
 end
 
 return {

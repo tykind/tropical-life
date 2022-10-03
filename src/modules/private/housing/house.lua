@@ -124,6 +124,8 @@ function house:purchase(target: Player, onceLeft: (any...) -> () | nil)
 	self:setOwner(target, onceLeft)
 	self.setup(self) --> Set up house stuff
 
+	--> @Info Handle multiple event cases
+
 	for _, funcs in pairs(self.OnBuy) do
 		funcs()
 	end
@@ -154,24 +156,48 @@ function house:sell(target: Player, ignoreReturn : boolean?)
 
 	self.Owner = nil
 
-	for _, funcs in pairs(self.OnSell) do
-		funcs()
+	for i, houseInfo in pairs(currentOwners) do
+		if houseInfo.UserId == target.UserId then
+			table.remove(currentOwners, i)
+			break
+		end
 	end
 
 	if self.reset then
 		self.reset(self, target)
 	end
+
+	--> @Info Handle multiple event cases
+
+	for _, funcs in pairs(self.OnSell) do
+		funcs()
+	end
 end
 
-Players.PlayerAdded:Connect(function(player)
-	for _, houseInfo in pairs(currentOwners) do
+local function trySellOnLeft(player : Player, House : QuickTypes.House, tries : number)
+	if tries >= 10 then
+		--> @Info Just reset home
+		House.Owner = nil
+		if House.reset then
+			House.reset(House, player)
+		end
+		return
+	end
+
+	local succ, err = pcall(House.sell, House, player, true) --> Sell money safely without giving out money (since it's unsafe, might not add anyways)
+	if not succ then 
+		TestService:Fail(("[HOUSE SYSTEM] - %s | try %d"):format(err, tries)) --> Log error
+		task.wait(.5)
+		trySellOnLeft(player, House, tries + 1)
+	end
+end
+
+Players.PlayerRemoving:Connect(function(player)
+	for i, houseInfo in pairs(currentOwners) do
 		if houseInfo.UserId == player.UserId then
 			--> @Info Found our player
-			local Home : QuickTypes.House = houseInfo.House
-			local succ, err = pcall(Home.sell, Home, player, true) --> Sell money safely without giving out money (since it's unsafe, might not add anyways)
-			if not succ then 
-				TestService:Fail(("[HOUSE SYSTEM] - %s"):format(err)) --> Log error
-			end
+			trySellOnLeft(player, houseInfo.House, 0)
+			table.remove(currentOwners, i)
 			break
 		end
 	end

@@ -56,7 +56,7 @@ end
 
 local function isCharacter(obj)
 	while true do task.wait() 
-		if obj:IsA("Workspace") then
+		if not(obj) or obj:IsA("Workspace") then
 			return
 		end
 		

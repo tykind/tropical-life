@@ -1,6 +1,7 @@
 --> @Desc Nice logging system
 --> @Author Tykind
 local Players = game:GetService("Players")
+local TestService = game:GetService("TestService")
 
 local logger = {}
 logger.__index = logger
@@ -19,8 +20,12 @@ function logger:get_utc()
     return dt:FormatUniversalTime("ddd MMM D YYYY | h:mm A", "en-us")
 end
 
-function logger:log(str)
-    print(("[%s] [%s] - %s"):format(self:get_utc(), self.Context, str))
+function logger:log(str, ...)
+    TestService:Message(("[%s] [%s] - %s"):format(self:get_utc(), self.Context, str:format(...)))
+end
+
+function logger:err(str, ...)
+    TestService:Error(("[%s] [%s] - %s"):format(self:get_utc(), self.Context, str:format(...)))
 end
 
 ---> @Section Special functions

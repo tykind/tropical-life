@@ -91,7 +91,8 @@ function tag.new(player : Player, tagsFolder : Folder) : tag
     local onParentLeftConn : RBXScriptConnection
     families.DescendantAdded:Connect(function(descendant)
         if not descendant:IsA("Folder") then
-            if descendant.Name == tostring(tag.Player.UserId) then
+            local familyTagFound = clonedTag:WaitForChild("Family", 5)
+            if familyTagFound and descendant.Name == tostring(tag.Player.UserId) then
                 local OwnerName = tag:getPlayerNameInGame(tonumber(descendant.Parent.Name))
                 clonedTag.Family.Text = ("%s's family"):format(OwnerName)
                 clonedTag.Family.Visible = true
@@ -106,7 +107,8 @@ function tag.new(player : Player, tagsFolder : Folder) : tag
 
     families.DescendantRemoving:Connect(function(descendant)
         if not descendant:IsA("Folder") then
-            if descendant.Name == tostring(tag.Player.UserId) then
+            local familyTagFound = clonedTag:WaitForChild("Family", 5)
+            if familyTagFound and descendant.Name == tostring(tag.Player.UserId) then
                 clonedTag.Family.Visible = false
 
                 if onParentLeftConn and onParentLeftConn.Connected then
