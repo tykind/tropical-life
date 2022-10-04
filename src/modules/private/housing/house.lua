@@ -57,7 +57,7 @@ end
 function house:setOwner(target: Player, onceLeft: (any...) -> () | nil)
 	--> @Info Disconnect old connection if it exists
 	self.Owner = target
-
+	self.ObjectRef.Configuration.Owner.Value = if target then target.UserId else 0
 	-- --> @Info Create connection and execute left
 	-- self.Connections["PlayerLeft"] = Players.PlayerRemoving:Connect(function(plr)
 	-- 	if plr == target then
@@ -73,10 +73,12 @@ function house:setOwner(target: Player, onceLeft: (any...) -> () | nil)
 	-- end)
 
 	--> @Info Adding player to a queue of removing
-	table.insert(currentOwners, {
-		UserId = target.UserId,
-		House = self
-	})
+	if target then
+		table.insert(currentOwners, {
+			UserId = target.UserId,
+			House = self
+		})
+	end
 end
 
 function house:setPublicConfig(name: string, value: any)
@@ -107,6 +109,8 @@ end
 
 function house:purchase(target: Player, onceLeft: (any...) -> () | nil)
 	assert(self.CanPurchase, "can't buy this")
+	self:setCanPurchase(false)
+	
 	assert(not(self.Owner), "somebody already owns this") --> Just don't overwrite someone elses home
 
 	--> @Info Now handle purchasing
@@ -123,12 +127,10 @@ function house:purchase(target: Player, onceLeft: (any...) -> () | nil)
 
 	self:setOwner(target, onceLeft)
 	self.setup(self) --> Set up house stuff
+	
 
-	--> @Info Handle multiple event cases
-
-	for _, funcs in pairs(self.OnBuy) do
-		funcs()
-	end
+	TestService:Message(("[HOUSE SYSTEM EVENT] - Purchased | %s Setup : %s | New Owner : %s"):format(self.ObjectRef.Name, 
+		tostring(self.setup), target.Name)) --> Log event
 end
 
 function house:sell(target: Player, ignoreReturn : boolean?)
@@ -154,12 +156,11 @@ function house:sell(target: Player, ignoreReturn : boolean?)
 	-- 	conn:Disconnect()
 	-- end
 
-	self.Owner = nil
+	self:setOwner(nil)
 
 	for i, houseInfo in pairs(currentOwners) do
 		if houseInfo.UserId == target.UserId then
 			table.remove(currentOwners, i)
-			break
 		end
 	end
 
@@ -167,17 +168,18 @@ function house:sell(target: Player, ignoreReturn : boolean?)
 		self.reset(self, target)
 	end
 
-	--> @Info Handle multiple event cases
-
-	for _, funcs in pairs(self.OnSell) do
-		funcs()
-	end
+	self:setCanPurchase(true)
+	TestService:Message(("[HOUSE SYSTEM EVENT] - Sold | %s Reset : %s | Old Owner : %s | Ignored return : %s"):format(self.ObjectRef.Name, 
+	tostring(self.reset), target.Name, tostring(ignoreReturn))) --> Log event
 end
 
-local function trySellOnLeft(player : Player, House : QuickTypes.House, tries : number)
+local function trySellOnLeft(player : Player, currentOwnerIndex : number, House : QuickTypes.House, tries : number)
 	if tries >= 10 then
-		--> @Info Just reset home
-		House.Owner = nil
+		--> @Info Just reset home manually
+		House:setOwner(nil)
+
+		table.remove(currentOwners, currentOwnerIndex)
+
 		if House.reset then
 			House.reset(House, player)
 		end
@@ -185,20 +187,21 @@ local function trySellOnLeft(player : Player, House : QuickTypes.House, tries : 
 	end
 
 	local succ, err = pcall(House.sell, House, player, true) --> Sell money safely without giving out money (since it's unsafe, might not add anyways)
-	if not succ then 
+	if not(succ) and not(err:match("you aren't the owner")) then 
 		TestService:Fail(("[HOUSE SYSTEM] - %s | try %d"):format(err, tries)) --> Log error
 		task.wait(.5)
 		trySellOnLeft(player, House, tries + 1)
+		return
 	end
+	
+	table.remove(currentOwners, currentOwnerIndex)
 end
 
 Players.PlayerRemoving:Connect(function(player)
 	for i, houseInfo in pairs(currentOwners) do
 		if houseInfo.UserId == player.UserId then
 			--> @Info Found our player
-			trySellOnLeft(player, houseInfo.House, 0)
-			table.remove(currentOwners, i)
-			break
+			trySellOnLeft(player, i, houseInfo.House, 0)
 		end
 	end
 end)

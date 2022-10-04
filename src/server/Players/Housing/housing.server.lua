@@ -49,6 +49,8 @@ for _, HouseObj in pairs(workspace.Houses:GetChildren()) do
 	
 					if succ then
 						prompt.Enabled = false
+					else
+						House:setCanPurchase(true)
 					end
 
 					debounce = false
@@ -78,6 +80,32 @@ for _, HouseObj in pairs(workspace.Houses:GetChildren()) do
 				task.wait(17)
 
 				hpReqActive = false
+			end
+		end
+	end)
+
+	--> @Info Manual fix for house not setting owner (Temp) Owner
+	local config = HouseObj.Configuration
+	local OwnerValue : NumberValue = config.Owner
+
+	OwnerValue:GetPropertyChangedSignal("Value"):Connect(function()
+		if OwnerValue.Value == 0 then
+			--> @Info Changed to default, we'll wait for process see if it resets....
+			local start = tick()
+			while true do task.wait()
+				if tick() - start > 2 then
+					--> @Info Proceed to reset house manually
+					House:setOwner(nil)
+					if House.reset then
+						House.reset(House) --> @Info Should handle if player is not there
+					end
+					break
+				end
+
+				--> @Info Check if the thing actually executed
+				if DoorPrompt.Enabled then
+					break	
+				end
 			end
 		end
 	end)
