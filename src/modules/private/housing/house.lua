@@ -54,6 +54,20 @@ function house:setSetupFunction(setupFunc: (any...) -> () | nil)
 	self.setup = setupFunc
 end
 
+function house:removeGlobalCache(target : Player | number)
+	if typeof(target) == "Instance" and target:IsA("Player") then
+		target = target.UserId
+	end
+
+
+	for i, houseInfo in pairs(currentOwners) do
+		if houseInfo.UserId == target then
+			--> @Info Found our player
+			table.remove(currentOwners, i)
+		end
+	end
+end
+
 function house:setOwner(target: Player, onceLeft: (any...) -> () | nil)
 	--> @Info Disconnect old connection if it exists
 	self.Owner = target
@@ -109,8 +123,6 @@ end
 
 function house:purchase(target: Player, onceLeft: (any...) -> () | nil)
 	assert(self.CanPurchase, "can't buy this")
-	self:setCanPurchase(false)
-	
 	assert(not(self.Owner), "somebody already owns this") --> Just don't overwrite someone elses home
 
 	--> @Info Now handle purchasing
@@ -157,18 +169,13 @@ function house:sell(target: Player, ignoreReturn : boolean?)
 	-- end
 
 	self:setOwner(nil)
-
-	for i, houseInfo in pairs(currentOwners) do
-		if houseInfo.UserId == target.UserId then
-			table.remove(currentOwners, i)
-		end
-	end
+	self:removeGlobalCache(target)
 
 	if self.reset then
 		self.reset(self, target)
 	end
 
-	self:setCanPurchase(true)
+	--self:setCanPurchase(true)
 	TestService:Message(("[HOUSE SYSTEM EVENT] - Sold | %s Reset : %s | Old Owner : %s | Ignored return : %s"):format(self.ObjectRef.Name, 
 	tostring(self.reset), target.Name, tostring(ignoreReturn))) --> Log event
 end
@@ -177,6 +184,7 @@ local function trySellOnLeft(player : Player, currentOwnerIndex : number, House 
 	if tries >= 10 then
 		--> @Info Just reset home manually
 		House:setOwner(nil)
+		House:removeGlobalCache(player)
 
 		table.remove(currentOwners, currentOwnerIndex)
 

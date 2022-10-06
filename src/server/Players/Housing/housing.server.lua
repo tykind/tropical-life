@@ -99,6 +99,8 @@ for _, HouseObj in pairs(workspace.Houses:GetChildren()) do
 					if House.reset then
 						House.reset(House) --> @Info Should handle if player is not there
 					end
+
+					House:setCanPurchase(true) --> Allow players to buy it
 					break
 				end
 
@@ -106,6 +108,18 @@ for _, HouseObj in pairs(workspace.Houses:GetChildren()) do
 				if DoorPrompt.Enabled then
 					break	
 				end
+			end
+		end
+	end)
+
+	--> @Info Assist Manual Fix
+
+	task.spawn(function()
+		while true do task.wait()
+			local oldId = OwnerValue.Value
+			if OwnerValue.Value ~= 0 and not(Players:GetPlayerByUserId(oldId)) then
+				OwnerValue.Value = 0
+				House:removeGlobalCache(oldId)
 			end
 		end
 	end)
